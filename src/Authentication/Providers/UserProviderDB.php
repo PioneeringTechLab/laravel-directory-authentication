@@ -6,10 +6,9 @@ use Exception;
 
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+Use Illuminate\Support\Facades\Hash;
 
 use CSUNMetaLab\Authentication\Exceptions\InvalidUserModelException;
-
-use Hash;
 
 /**
  * Service provider handler that provides database authentication operations.
@@ -163,5 +162,24 @@ class UserProviderDB implements UserProvider
     	// whether the user is actually active and should be allowed to auth in.
     	return true;
 		//return $user->isActive();
+    }
+    
+	/**
+	 * Rehashes the user's password when required
+	 * 
+	 * @param UserInteface $user The provided user object
+	 * @param array $credentials The credentials to check against
+	 * @param bool $force Forces the rehash to take place
+	 */
+    public function rehashPasswordIfRequired(AuthenticableContract $user, array $credentials, $force = false) {
+		if(!isset($credentials['password'])) {
+			return;
+		}
+
+		$plain = $credentials['password'];
+		
+		if($force || Hash::needsRehash($user->getAuthPassword())) {
+			$user->forceFill([$user->getAuthPasswordName() => Hash::make($plain),])->save();	
+		}
     }
 }
