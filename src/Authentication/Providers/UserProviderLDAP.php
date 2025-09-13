@@ -250,7 +250,7 @@ class UserProviderLDAP implements UserProvider
 	 * @param array $credentials The credentials to check against
 	 * @param bool $force Forces the rehash to take place
 	 */
-	public function rehashPasswordIfRequired(AuthenticableContract $user, array $credentials, $force = false) {
+	public function rehashPasswordIfRequired(AuthenticatableContract $user, array $credentials, $force = false) {
 		if(!isset($credentials['password'])) {
 			return;
 		}
