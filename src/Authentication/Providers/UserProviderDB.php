@@ -113,7 +113,7 @@ class UserProviderDB implements UserProvider
 	 * @param string $identifier The desired identifier to use
 	 * @return User
 	 */
-    public function retrieveById($identifier) {
+    public function retrieveById(string $identifier): User {
     	$m = $this->modelName;
     	return $m::findForAuth($identifier);
     }
@@ -125,7 +125,7 @@ class UserProviderDB implements UserProvider
 	 * @param string $token The Remember Me token to use
 	 * @return User
 	 */
-	public function retrieveByToken($identifier, $token) {
+	public function retrieveByToken(string $identifier, string $token): User {
 		$m = $this->modelName;
 		return $m::findForAuthToken($identifier, $token);
 	}
@@ -135,8 +135,9 @@ class UserProviderDB implements UserProvider
 	 *
 	 * @param UserInterface $user The user object whose token is being updated
 	 * @param string $token The Remember Me token to update
+	 * @return void
 	 */
-    public function updateRememberToken(AuthenticatableContract $user, $token) {
+    public function updateRememberToken(AuthenticatableContract $user, string $token): void {
 	    if(!empty($user)) {
 	    	// make sure there is a remember_token field available for
 	    	// updating before trying to update; otherwise we run into
@@ -155,7 +156,7 @@ class UserProviderDB implements UserProvider
  	 * @param array $credentials The credentials against which to check
  	 * @return boolean
  	 */
-    public function validateCredentials(AuthenticatableContract $user, array $credentials) {
+    public function validateCredentials(AuthenticatableContract $user, array $credentials): bool {
     	// our external service, directory, etc. has already verified whether
     	// or not the credentials are valid so the point is moot here; instead,
     	// let's either "return true" to do a pass-through or do a check for
@@ -170,8 +171,9 @@ class UserProviderDB implements UserProvider
 	 * @param UserInteface $user The provided user object
 	 * @param array $credentials The credentials to check against
 	 * @param bool $force Forces the rehash to take place
+	 * @return void
 	 */
-    public function rehashPasswordIfRequired(AuthenticatableContract $user, array $credentials, $force = false) {
+    public function rehashPasswordIfRequired(AuthenticatableContract $user, array $credentials, bool $force = false): void {
 		if(!isset($credentials['password'])) {
 			return;
 		}

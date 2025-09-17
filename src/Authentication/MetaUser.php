@@ -2,8 +2,8 @@
 
 namespace CSUNMetaLab\Authentication;
 
-use Auth;
-use Schema;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use CSUNMetaLab\Authentication\Interfaces\MetaAuthenticatableContract;
 
 use Illuminate\Auth\Authenticatable;
@@ -62,18 +62,29 @@ class MetaUser extends Model implements AuthenticatableContract, AuthorizableCon
 	 *
 	 * @return boolean
 	 */
-	public function canHaveRememberToken() {
+	public function canHaveRememberToken(): bool {
 		return Schema::hasColumn($this->table, 'remember_token');
 	}
 
-	// implements MetaAuthenticatableContract#findForAuth
-	public static function findForAuth($identifier) {
+    /**
+     * implements MetaAuthenticatableContract#findForAuth
+     *
+     * @param string $identifier
+     * @return Model
+     */
+    public static function findForAuth(string $identifier): Model {
 		return self::where(self::META_USER_PRIMARY_KEY, '=', $identifier)
 			->first();
 	}
 
-	// implements MetaAuthenticatableContract#findForAuthToken
-	public static function findForAuthToken($identifier, $token) {
+    /**
+     * implements MetaAuthenticatableContract#findForAuthToken
+     *
+     * @param string $identifier
+     * @param string $token
+     * @return Model
+     */
+    public static function findForAuthToken(string $identifier, string $token): Model {
 		return self::where(self::META_USER_PRIMARY_KEY, '=', $identifier)
 			->where('remember_token', '=', $token)
 			->first();
@@ -88,7 +99,7 @@ class MetaUser extends Model implements AuthenticatableContract, AuthorizableCon
 	 *
 	 * @return boolean
 	 */
-	public function getIsValidAttribute() {
+	public function getIsValidAttribute(): bool {
 		return $this->exists;
 	}
 
@@ -97,9 +108,9 @@ class MetaUser extends Model implements AuthenticatableContract, AuthorizableCon
 	 * the authenticated user is masquerading as. Returns null if there is no
 	 * masquerade curently taking place.
 	 *
-	 * @return MetaUser|null 
+	 * @return Model|null
 	 */
-	public function getMasqueradingUser() {
+	public function getMasqueradingUser(): ?Model {
 		if($this->isMasquerading()) {
 			return session('masquerading_user');
 		}
@@ -113,7 +124,7 @@ class MetaUser extends Model implements AuthenticatableContract, AuthorizableCon
      *
      * @return boolean
      */
-    public function isMasquerading() {
+    public function isMasquerading(): bool {
         return session('masquerading_user') != null;
     }
 
@@ -124,7 +135,7 @@ class MetaUser extends Model implements AuthenticatableContract, AuthorizableCon
      * @param MetaUser $user The user instance to become
      * @return boolean
      */
-    public function masqueradeAsUser($user) {
+    public function masqueradeAsUser(MetaUser $user): bool {
         // if this user is authenticated, then we can masquerade as the
         // user that has been passed as the parameter
         if(Auth::check()) {
@@ -147,7 +158,7 @@ class MetaUser extends Model implements AuthenticatableContract, AuthorizableCon
      *
      * @return boolean
      */
-    public function stopMasquerading() {
+    public function stopMasquerading(): bool {
         if($this->isMasquerading()) {
             // become the real user again
             Auth::logout();

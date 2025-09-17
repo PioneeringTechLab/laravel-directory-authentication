@@ -14,7 +14,8 @@ class HandlerLDAPFactory
 	 *
 	 * @return HandlerLDAP
 	 */
-	public static function fromDefaults() {
+	public static function fromDefaults(): HandlerLDAP
+    {
 		$handler = new HandlerLDAP(
 			config('ldap.host'),
 			config('ldap.basedn'),

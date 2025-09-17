@@ -2,6 +2,8 @@
 
 namespace CSUNMetaLab\Authentication\Interfaces;
 
+use Illuminate\Database\Eloquent\Model;
+
 interface MetaAuthenticatableContract {
 
 	/**
@@ -9,9 +11,9 @@ interface MetaAuthenticatableContract {
 	 * custom authentication service providers.
 	 *
 	 * @param string $identifier The identifier to use for retrieval
-	 * @return User
+	 * @return Model
 	 */
-	public static function findForAuth($identifier);
+	public static function findForAuth(string $identifier): Model;
 
 	/**
 	 * Returns the user with the given identifier and Remember Me token. This
@@ -20,7 +22,7 @@ interface MetaAuthenticatableContract {
 	 * @param string $identifier The identifier to use for retrieval
 	 * @param string $token The token to use for retrieval
 	 *
-	 * @return User
+	 * @return Model
 	 */
-	public static function findForAuthToken($identifier, $token);
+	public static function findForAuthToken(string $identifier, string $token): Model;
 }

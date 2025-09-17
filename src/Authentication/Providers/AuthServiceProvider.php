@@ -21,7 +21,7 @@ class AuthServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function register() {
+	public function register(): void {
 		// if the provider method exists then we are at least in Laravel 5.1
 		if(method_exists('Illuminate\Auth\AuthManager', 'provider')) {
 			// LDAP auth extension
@@ -53,7 +53,7 @@ class AuthServiceProvider extends ServiceProvider
 	 *
 	 * @return void
 	 */
-	public function boot() {
+	public function boot(): void {
 		$this->publishes([
         	__DIR__.'/../config/ldap.php' => config_path('ldap.php'),
     	]);
@@ -68,7 +68,7 @@ class AuthServiceProvider extends ServiceProvider
 	 *
 	 * @return array
 	 */
-	public function provides() {
+	public function provides(): array {
 		return array();
 	}
 

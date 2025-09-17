@@ -10,17 +10,18 @@ use Exception;
  */
 class LDAPPasswordFactory
 {
-	/**
-	 * Generates and returns a new password as a SSHA hash for use in LDAP. If
-	 * the salt is not specified, one will be generated using the openssl
-	 * extension and have a length of four bytes.
-	 *
-	 * @param string $password The plaintext password to hash
-	 * @param string $salt Optional salt for the algorithm
-	 *
-	 * @return string
-	 */
-	public static function SSHA($password, $salt=null) {
+    /**
+     * Generates and returns a new password as a SSHA hash for use in LDAP. If
+     * the salt is not specified, one will be generated using the openssl
+     * extension and have a length of four bytes.
+     *
+     * @param string $password The plaintext password to hash
+     * @param string|null $salt Optional salt for the algorithm
+     *
+     * @return string
+     * @throws Exception
+     */
+	public static function SSHA(string $password, string $salt=null): string {
 		if(empty($salt)) {
 			if(function_exists('openssl_random_pseudo_bytes')) {
 				// salts should be four bytes

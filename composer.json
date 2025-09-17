@@ -10,9 +10,9 @@
         }
     ],
     "require": {
-        "php": ">=5.5.9"
+        "php": ">=7.1"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "v2",
     "autoload": {
         "classmap": [
             "src/Authentication/"

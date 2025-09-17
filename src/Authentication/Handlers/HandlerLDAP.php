@@ -14,6 +14,7 @@ use Toyota\Component\Ldap\Core\Manager,
     Toyota\Component\Ldap\Exception\NodeNotFoundException;
 
 use Toyota\Component\Ldap\API\ConnectionInterface;
+use Toyota\Component\Ldap\Core\SearchResult;
 
 /**
  * Handler class for LDAP operations using the Tiesa LDAP package.
@@ -76,9 +77,9 @@ class HandlerLDAP
 	 * @param string $search_mail Optional attribute to use for searching by email
 	 * @param string $search_mail_array Optional attribute to use for searching by email array
 	 */
-	public function __construct($host, $basedn, $dn, $password,
-		$search_user_id, $search_username, $search_mail="mail",
-		$search_mail_array="mailLocalAddress") {
+	public function __construct(string $host, string $basedn, string $dn, string $password,
+		string $search_user_id, string $search_username, string $search_mail="mail",
+		string $search_mail_array="mailLocalAddress") {
 		$this->host = $host;
 		$this->basedn = $basedn;
 		$this->dn = $dn;
@@ -116,8 +117,9 @@ class HandlerLDAP
 	 * Sets the base DN and credentials for add and modify operations based
 	 * on the search base DN and credentials. This is done to provide sensible
 	 * defaults in case the specific setter methods are not invoked.
+	 * @return void
 	 */
-	private function setDefaultManipulationInformation() {
+	private function setDefaultManipulationInformation(): void {
 		$this->add_base_dn = $this->basedn_array[0];
 		$this->add_dn = $this->dn;
 		$this->add_pw = $this->password;
@@ -135,8 +137,9 @@ class HandlerLDAP
 	 * @param string $username The username with which to bind
 	 * @param string $password The password with which to bind
 	 * @throws BindException If the binding operation fails
+	 * @return void
 	 */
-	public function bind($username, $password) {
+	public function bind(string $username, string $password): void {
 		$this->ldap->bind($username, $password);
 	}
 
@@ -145,7 +148,7 @@ class HandlerLDAP
 	 *
 	 * @return boolean
 	 */
-	public function canAllowNoPass() {
+	public function canAllowNoPass(): bool {
 		return $this->allowNoPass;
 	}
 
@@ -162,7 +165,7 @@ class HandlerLDAP
 	 * @throws Exception If the LDAP connection fails
 	 * @return boolean
 	 */
-	public function connect($username="", $password="") {
+	public function connect(string $username="", string $password=""): bool {
 		// make sure the ldap extension has been loaded
 		if(!extension_loaded('ldap')) {
 			throw new LdapExtensionNotLoadedException();
@@ -279,7 +282,7 @@ class HandlerLDAP
 	 * @throws Exception If the LDAP connection fails
 	 * @return boolean
 	 */
-	public function connectByDN($dn, $password="") {
+	public function connectByDN(string $dn, string $password=""): bool {
 		// make sure the ldap extension has been loaded
 		if(!extension_loaded('ldap')) {
 			throw new LdapExtensionNotLoadedException();
@@ -342,11 +345,11 @@ class HandlerLDAP
 	 * Returns the value of the specified attribute from the result set. Returns
 	 * null if the attribute could not be found.
 	 *
-	 * @param Result-instance $results The result-set to search through
+	 * @param SearchResult $results The result-set to search through
 	 * @param string $attr_name The attribute name to look for
 	 * @return string|integer|boolean|null
 	 */
-    public function getAttributeFromResults($results, $attr_name) {
+    public function getAttributeFromResults(SearchResult $results, string $attr_name) {
         foreach($results as $node) {
         	if($attr_name == "dn") {
         		return $node->getDn();
@@ -364,10 +367,10 @@ class HandlerLDAP
     /**
      * Returns whether the result set passed has at least one valid record in it.
      *
-     * @param Result-instant $results The set of results to check
+     * @param SearchResult $results The set of results to check
      * @return boolean
      */
-    public function isValidResult($results) {
+    public function isValidResult(SearchResult $results): bool {
     	return $results->valid();
     }
 
@@ -378,9 +381,10 @@ class HandlerLDAP
 	 * default unless their values have been overridden.
 	 *
 	 * @param string $value The value to use for searching
-	 * @return Result-instance
+	 * @return SearchResult
 	 */
-	public function searchByAuth($value) {
+	public function searchByAuth(string $value): ?SearchResult
+    {
 		// figure out how many times the placeholder occurs, then fill an
 		// array that number of times with the search value
 		$numArgs = substr_count($this->search_auth_query, "%s");
@@ -422,9 +426,10 @@ class HandlerLDAP
 	 * Queries LDAP for the record with the specified email.
 	 *
 	 * @param string $email The email to use for searching
-	 * @return Result-instance
+	 * @return SearchResult
 	 */
-	public function searchByEmail($email) {
+	public function searchByEmail(string $email): SearchResult
+    {
 		$results = $this->ldap->search($this->basedn,
 			$this->search_mail . '=' . $email);
 		return $results;
@@ -434,9 +439,10 @@ class HandlerLDAP
 	 * Queries LDAP for the record with the specified mailLocalAddress.
 	 *
 	 * @param string $email The mailLocalAddress to use for searching
-	 * @return Result-instance
+	 * @return SearchResult
 	 */
-	public function searchByEmailArray($email) {
+	public function searchByEmailArray(string $email): SearchResult
+    {
 		$results = $this->ldap->search($this->basedn,
 			$this->search_mail_array . '=' . $email);
 		return $results;
@@ -446,9 +452,10 @@ class HandlerLDAP
 	 * Queries LDAP for the records using the specified query.
 	 *
 	 * @param string $query Any valid LDAP query to use for searching
-	 * @return Result-instance
+	 * @return SearchResult
 	 */
-	public function searchByQuery($query) {
+	public function searchByQuery(string $query): SearchResult
+    {
 		$results = $this->ldap->search($this->basedn, $query);
 		return $results;
 	}
@@ -457,9 +464,10 @@ class HandlerLDAP
 	 * Queries LDAP for the record with the specified uid.
 	 *
 	 * @param string $uid The uid to use for searching
-	 * @return Result-instance
+	 * @return SearchResult
 	 */
-	public function searchByUid($uid) {
+	public function searchByUid(string $uid): SearchResult
+    {
 		$results = $this->ldap->search($this->basedn,
 			$this->search_username . '=' . $uid);
 		return $results;
@@ -476,7 +484,7 @@ class HandlerLDAP
 	 * @return bool
 	 * @throws BindException
 	 */
-	public function addObject($identifier, $attributes) {
+	public function addObject(string $identifier, array $attributes): bool {
 		// bind using the add credentials
 		$this->bind(
 			$this->add_dn,
@@ -531,7 +539,7 @@ class HandlerLDAP
 	 * @return bool
 	 * @throws BindException
 	 */
-	public function modifyObject($identifier, $attributes) {
+	public function modifyObject(string $identifier, array $attributes): bool {
 		// bind using the modify credentials if anything other than "self"
 		// has been set as the method
 		if($this->modify_method != "self") {
@@ -597,7 +605,7 @@ class HandlerLDAP
 	 * @return bool
 	 * @throws BindException
 	 */
-	public function modifyObjectPassword($identifier, $password) {
+	public function modifyObjectPassword(string $identifier, string $password): bool {
 		return $this->modifyObject($identifier, [
 			'userPassword' => LDAPPasswordFactory::SSHA($password),
 		]);
@@ -607,8 +615,9 @@ class HandlerLDAP
 	 * Sets whether blank passwords are allowed for binding attempts.
 	 *
 	 * @param boolean $allowNoPass Whether to allow blank passwords
+	 * @return void
 	 */
-	public function setAllowNoPass($allowNoPass) {
+	public function setAllowNoPass(bool $allowNoPass): void {
 		$this->allowNoPass = $allowNoPass;
 	}
 
@@ -618,8 +627,9 @@ class HandlerLDAP
 	 * placeholder for the search value.
 	 *
 	 * @param string $search_auth_query LDAP query to use
+	 * @return void
 	 */
-	public function setAuthQuery($search_auth_query) {
+	public function setAuthQuery(string $search_auth_query): void {
 		$this->search_auth_query = $search_auth_query;
 	}
 
@@ -627,8 +637,9 @@ class HandlerLDAP
 	 * Sets the base DN used during queries.
 	 *
 	 * @param string $basedn The base DN to use
+	 * @return void
 	 */
-	public function setBaseDN($basedn) {
+	public function setBaseDN(string $basedn): void {
 		$this->basedn = $basedn;
 		$this->basedn_array = explode("|", $basedn);
 	}
@@ -637,8 +648,9 @@ class HandlerLDAP
 	 * Sets the LDAP version to be used.
 	 *
 	 * @param int $version The LDAP version to use
+	 * @return void
 	 */
-	public function setVersion($version) {
+	public function setVersion(string $version): void {
 		$this->version = $version;
 	}
 
@@ -646,8 +658,9 @@ class HandlerLDAP
 	 * Sets the overlay DN to use for search, add, and modify.
 	 *
 	 * @param string $overlay_dn The overlay DN to use
+	 * @return void
 	 */
-	public function setOverlayDN($overlay_dn) {
+	public function setOverlayDN(string $overlay_dn): void {
 		$this->overlay_dn = $overlay_dn;
 	}
 
@@ -655,8 +668,9 @@ class HandlerLDAP
 	 * Sets the base DN for add operations in a subtree.
 	 *
 	 * @param string $add_base_dn The base DN for add operations
+	 * @return void
 	 */
-	public function setAddBaseDN($add_base_dn) {
+	public function setAddBaseDN(string $add_base_dn): void {
 		if(!empty($add_base_dn)) {
 			$this->add_base_dn = $add_base_dn;
 		}
@@ -672,7 +686,7 @@ class HandlerLDAP
 	 *
 	 * @param string $add_dn The admin DN for add operations
 	 */
-	public function setAddDN($add_dn) {
+	public function setAddDN(string $add_dn): void {
 		if(!empty($add_dn)) {
 			$this->add_dn = $add_dn;
 		}
@@ -687,8 +701,9 @@ class HandlerLDAP
 	 * parameter is left empty, the search admin password will be used instead.
 	 *
 	 * @param string $add_pw The admin password for add operations
+	 * @return void
 	 */
-	public function setAddPassword($add_pw) {
+	public function setAddPassword(string $add_pw): void {
 		if(!empty($add_pw)) {
 			$this->add_pw = $add_pw;
 		}
@@ -704,8 +719,9 @@ class HandlerLDAP
 	 * as well as the modify password.
 	 *
 	 * @param string $modify_method The modify method to use
+	 * @return void
 	 */
-	public function setModifyMethod($modify_method) {
+	public function setModifyMethod(string $modify_method): void {
 		if($modify_method == "admin") {
 			$this->modify_method = $modify_method;
 		}
@@ -720,8 +736,9 @@ class HandlerLDAP
 	 * left empty, the add base DN will be used instead.
 	 *
 	 * @param string $modify_base_dn The base DN for modify operations
+	 * @return void
 	 */
-	public function setModifyBaseDN($modify_base_dn) {
+	public function setModifyBaseDN(string $modify_base_dn): void {
 		if(!empty($modify_base_dn)) {
 			$this->modify_base_dn = $modify_base_dn;
 		}
@@ -736,8 +753,9 @@ class HandlerLDAP
 	 * is left empty, the add admin DN will be used instead.
 	 *
 	 * @param string $modify_dn The admin DN for modify operations
+	 * @return void
 	 */
-	public function setModifyDN($modify_dn) {
+	public function setModifyDN(string $modify_dn): void {
 		if(!empty($modify_dn)) {
 			$this->modify_dn = $modify_dn;
 		}
@@ -752,8 +770,9 @@ class HandlerLDAP
 	 * parameter is left empty, the add admin password will be used instead.
 	 *
 	 * @param string $modify_dn The admin password for modify operations
+	 * @return void
 	 */
-	public function setModifyPassword($modify_pw) {
+	public function setModifyPassword(string $modify_pw): void {
 		if(!empty($modify_pw)) {
 			$this->modify_pw = $modify_pw;
 		}
