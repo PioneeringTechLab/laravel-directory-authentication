@@ -6,6 +6,7 @@ use Exception;
 
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Database\Eloquent\Model;
 Use Illuminate\Support\Facades\Hash;
 
 use CSUNMetaLab\Authentication\Exceptions\InvalidUserModelException;
@@ -111,9 +112,9 @@ class UserProviderDB implements UserProvider
 	 * Retrieves the user with the specified identifier from the model.
 	 *
 	 * @param string $identifier The desired identifier to use
-	 * @return User
+	 * @return Model
 	 */
-    public function retrieveById(string $identifier): User {
+    public function retrieveById($identifier): Model {
     	$m = $this->modelName;
     	return $m::findForAuth($identifier);
     }
@@ -123,9 +124,9 @@ class UserProviderDB implements UserProvider
 	 *
 	 * @param string $identifier The identifier to use
 	 * @param string $token The Remember Me token to use
-	 * @return User
+	 * @return Model
 	 */
-	public function retrieveByToken(string $identifier, string $token): User {
+	public function retrieveByToken($identifier, $token): Model {
 		$m = $this->modelName;
 		return $m::findForAuthToken($identifier, $token);
 	}
