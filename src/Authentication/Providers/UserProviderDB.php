@@ -138,7 +138,7 @@ class UserProviderDB implements UserProvider
 	 * @param string $token The Remember Me token to update
 	 * @return void
 	 */
-    public function updateRememberToken(AuthenticatableContract $user, string $token): void {
+    public function updateRememberToken(AuthenticatableContract $user, $token): void {
 	    if(!empty($user)) {
 	    	// make sure there is a remember_token field available for
 	    	// updating before trying to update; otherwise we run into
