@@ -20,5 +20,12 @@
         "psr-4": {
             "CSUNMetaLab\\Authentication\\": "src/Authentication/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "CSUNMetaLab\\Authentication\\Providers\\AuthServiceProvider"
+            ]
+        }
     }
 }
